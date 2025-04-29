@@ -5,16 +5,27 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wopro_file_scrubber", "wopro_file_scrubber\wopro_file_scrubber.csproj", "{6C5FC8D8-B377-4203-A52D-0BFAA52D6E43}"
 EndProject
+Project("{840C416C-B8F3-42BC-B0DD-F6BB14C9F8CB}") = "wopro_filescrubber_setup", "wopro_filescrubber_setup\wopro_filescrubber_setup.aiproj", "{3C01AF69-DD1F-418E-9989-EF52DB1717EA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		DefaultBuild|Any CPU = DefaultBuild|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{6C5FC8D8-B377-4203-A52D-0BFAA52D6E43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6C5FC8D8-B377-4203-A52D-0BFAA52D6E43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C5FC8D8-B377-4203-A52D-0BFAA52D6E43}.DefaultBuild|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C5FC8D8-B377-4203-A52D-0BFAA52D6E43}.DefaultBuild|Any CPU.Build.0 = Debug|Any CPU
 		{6C5FC8D8-B377-4203-A52D-0BFAA52D6E43}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C5FC8D8-B377-4203-A52D-0BFAA52D6E43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C01AF69-DD1F-418E-9989-EF52DB1717EA}.Debug|Any CPU.ActiveCfg = DefaultBuild
+		{3C01AF69-DD1F-418E-9989-EF52DB1717EA}.Debug|Any CPU.Build.0 = DefaultBuild
+		{3C01AF69-DD1F-418E-9989-EF52DB1717EA}.DefaultBuild|Any CPU.ActiveCfg = DefaultBuild
+		{3C01AF69-DD1F-418E-9989-EF52DB1717EA}.DefaultBuild|Any CPU.Build.0 = DefaultBuild
+		{3C01AF69-DD1F-418E-9989-EF52DB1717EA}.Release|Any CPU.ActiveCfg = DefaultBuild
+		{3C01AF69-DD1F-418E-9989-EF52DB1717EA}.Release|Any CPU.Build.0 = DefaultBuild
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
