@@ -1,3 +1,4 @@
+using Serilog;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -10,6 +11,7 @@ namespace wopro_file_scrubber
         public Form1()
         {
             InitializeComponent();
+            
         }
 
         private void scrubFiles_Click(object sender, EventArgs e)
@@ -18,28 +20,37 @@ namespace wopro_file_scrubber
             string searchPattern1 = "*_cm.txt";
             string searchPattern2 = "*_pt.txt";
             string path = folderLocation.Text;
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .WriteTo.File(path + "\\file_scrubber.log", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+
+         
             try
             {
                 bool flag2 = false;
+                string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                string folderPath = Path.Combine(path, $"File_Scrubber_bkp_{timestamp}");
                 DirectoryInfo directoryInfo = new DirectoryInfo(path);
+                Directory.CreateDirectory(folderPath);
                 foreach (FileInfo file in directoryInfo.GetFiles(searchPattern1))
                 {
-                    string path1 = path + "\\" + file.Name;
-                    File.Copy(path1, path1+"_bkp", overwrite: true);
-                    processFile(path1);
+                    string sourceFileName = path + "\\" + file.Name;
+                    string destinationFileName = folderPath + "\\" + file.Name + "_bkp";
+                    processFile(sourceFileName, destinationFileName);
 
 
                 }
 
                 foreach (FileInfo file in directoryInfo.GetFiles(searchPattern2))
                 {
-                    string path2 = path + "\\" + file.Name;
-                    File.Copy(path2, path2 + "_bkp", overwrite: true);
-                    processFile(path2);
+                    string sourceFileName = path + "\\" + file.Name;
+                    string destinationFileName = folderPath + "\\" + file.Name + "_bkp";
+                    processFile(sourceFileName, destinationFileName);
 
                 }
-
-
+                Log.Information("Completed scrubbing all files");
+                Log.CloseAndFlush();
                 MessageBox.Show("Scrubbing All File Complete");
                 folderLocation.Text = "";
             }
@@ -49,18 +60,20 @@ namespace wopro_file_scrubber
             }
            
         }
-        private void processFile(string path)
+        private void processFile(string sourcePath, string destinationPath)
         {
-            
-            var lines = new List<string>(File.ReadAllLines(path));
+            Log.Information("***** Start Processing file: " + sourcePath + "*****");
+            var lines = new List<string>(File.ReadAllLines(sourcePath));
             var newLines = new List<string>();
             string fileOrder = "";
-
+            bool doesFileNeedFixing = false;
             foreach (var line in lines)
             {
                 if (line.Contains("Checklist Log for Work Order:") && line.Contains("File Order:")) //match condition
                 {
                     // Update the matched line
+                    Log.Information("Fixing Header line: " + line);
+                    doesFileNeedFixing = true;
                     Match match = Regex.Match(line, @"File Order:\s*\d+");
                     if (match.Success)
                     {
@@ -81,14 +94,35 @@ namespace wopro_file_scrubber
                     newLines.Add(": "+ fileOrder);
                 }
                 else
-                {
-                    newLines.Add(line);
+                {   if (doesFileNeedFixing) {
+                        newLines.Add(line);
+                    }
+                    else {
+
+                        Log.Information("Header does not need to be fixed!");
+                        break;
+                    }
                 }
             }
 
-            File.WriteAllLines(path, newLines);
 
-            Console.WriteLine("Update complete!");
+            if (doesFileNeedFixing)
+            {
+
+                
+                DateTime originalCreationTime = File.GetCreationTime(sourcePath);
+                DateTime originalLastAccessTime = File.GetLastAccessTime(sourcePath);
+                DateTime originalLastWriteTime = File.GetLastWriteTime(sourcePath);
+                File.Copy(sourcePath, destinationPath, overwrite: true);
+
+                File.WriteAllLines(sourcePath, newLines);
+
+                File.SetCreationTime(sourcePath, originalCreationTime);
+                File.SetLastAccessTime(sourcePath, originalLastAccessTime);
+                File.SetLastWriteTime(sourcePath, originalLastWriteTime);
+                Log.Information("Resetting timestamp");
+                Log.Information("***** Finished Processing file: " + sourcePath + "*****");
+            }
         }
     }
 }
