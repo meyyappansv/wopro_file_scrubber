@@ -68,7 +68,7 @@
             Controls.Add(folderLocation);
             Controls.Add(label1);
             Name = "Form1";
-            Text = "woPro File Scrubber";
+            Text = "woPro File Scrubber 2.0";
             ResumeLayout(false);
             PerformLayout();
         }
