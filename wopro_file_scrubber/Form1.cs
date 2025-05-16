@@ -45,7 +45,7 @@ namespace wopro_file_scrubber
                 foreach (FileInfo file in directoryInfo.GetFiles(searchPattern2))
                 {
                     string sourceFileName = path + "\\" + file.Name;
-                    string destinationFileName = folderPath + "\\" + file.Name + "_bkp";
+                    string destinationFileName = folderPath + "\\" + file.Name;
                     processFile(sourceFileName, destinationFileName);
 
                 }
