@@ -66,9 +66,11 @@ namespace wopro_file_scrubber
             var lines = new List<string>(File.ReadAllLines(sourcePath));
             var newLines = new List<string>();
             string fileOrder = "";
+            
             bool doesFileNeedFixing = false;
             foreach (var line in lines)
             {
+                string updatedLine = "";
                 if (line.Contains("Checklist Log for Work Order:") && line.Contains("File Order:")) //match condition
                 {
                     // Update the matched line
@@ -86,22 +88,42 @@ namespace wopro_file_scrubber
                         Console.WriteLine("No match found.");
                     }
                    
-                    string updatedLine = Regex.Replace(line, @"File Order:\s*\d+,", "");
+                    updatedLine = Regex.Replace(line, @"File Order:\s*\d+,", "");
                     string normalized = Regex.Replace(updatedLine, @"\t+", "\t");
                     newLines.Add(normalized);
 
                     // Add a new line after it
                     newLines.Add(": "+ fileOrder);
                 }
+                else if (line.Trim().StartsWith("FAI:"))
+                {
+                    //Making the deviation lines to comment lines, for qcData processor
+                    doesFileNeedFixing = true; 
+                    updatedLine = Regex.Replace(line, @"FAI:", ": FAI:");
+                    Log.Information("Fixing deviation line: " + line);
+                    newLines.Add(updatedLine);
+                }
+                else if (line.Trim().StartsWith("Deviation:"))
+                {
+                    //Making the deviation lines to comment lines, for qcData processor
+                    doesFileNeedFixing = true;
+                    updatedLine = Regex.Replace(line, @"Deviation:", ": Deviation:");
+                    Log.Information("Fixing deviation line: " + line);
+                    newLines.Add(updatedLine);
+                }
+                else if (line.Trim().StartsWith("Deviation Link:"))
+                {
+                    //Making the deviation lines to comment lines, for qcData processor
+                    doesFileNeedFixing = true;
+                    updatedLine = Regex.Replace(line, @"Deviation Link:", ": Deviation Link:");
+                    Log.Information("Fixing deviation line: " + line);
+                    newLines.Add(updatedLine);
+                }
+            
                 else
-                {   if (doesFileNeedFixing) {
+                {   
                         newLines.Add(line);
-                    }
-                    else {
-
-                        Log.Information("Header does not need to be fixed!");
-                        break;
-                    }
+                    
                 }
             }
 
